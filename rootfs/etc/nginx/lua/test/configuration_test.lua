@@ -81,7 +81,8 @@ describe("Configuration", function()
       it("returns the current configured backends on the response body", function()
         -- Encoding backends since comparing tables fail due to reference comparison
         local encoded_backends = cjson.encode(get_backends())
-        ngx.shared.configuration_data:set("backends", encoded_backends)
+        ngx.shared.configuration_data:set("backend_bucket_names", cjson.encode({"bucket_1"}))
+        ngx.shared.configuration_data:set("bucket_1", encoded_backends)
         local s = spy.on(ngx, "print")
         assert.has_no.errors(configuration.call)
         assert.spy(s).was_called_with(encoded_backends)
@@ -102,7 +103,7 @@ describe("Configuration", function()
       it("stores the posted backends on the shared dictionary", function()
         -- Encoding backends since comparing tables fail due to reference comparison
         assert.has_no.errors(configuration.call)
-        assert.equal(ngx.shared.configuration_data:get("backends"), cjson.encode(get_backends()))
+        assert.equal(ngx.shared.configuration_data:get("bucket_1"), cjson.encode(get_backends()))
       end)
 
       context("Failed to read request body", function()
